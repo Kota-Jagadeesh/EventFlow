@@ -1,56 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
+import 'splash_screen.dart';
 
-void main() => runApp(
-  const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: AttendanceScanner(),
-  ),
-);
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class AttendanceScanner extends StatefulWidget {
-  const AttendanceScanner({super.key});
+  //lock the  orientation to portrait
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  @override
-  State<AttendanceScanner> createState() => _AttendanceScannerState();
+  //set the system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
+
+  runApp(const EventFlowApp());
 }
 
-class _AttendanceScannerState extends State<AttendanceScanner> {
-  final String scriptUrl =
-      "https://script.google.com/macros/s/AKfycbz9Mg79xKuSLPFq7dBcJ4laRqYZhjyc6PigKIZh5XBkpURmdfIORXbezVHu_eOhynRO/exec";
-  bool isProcessing = false;
-
-  Future<void> sendData(String id) async {
-    setState(() => isProcessing = true);
-    try {
-      final response = await http.post(Uri.parse("$scriptUrl?studentId=$id"));
-      _showResult(response.body);
-    } catch (e) {
-      _showResult("Error connecting to server");
-    }
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => isProcessing = false);
-  }
-
-  void _showResult(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
+class EventFlowApp extends StatelessWidget {
+  const EventFlowApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Hacktoberfest Scanner")),
-      body: isProcessing
-          ? const Center(child: CircularProgressIndicator())
-          : MobileScanner(
-              onDetect: (capture) {
-                final List<Barcode> barcodes = capture.barcodes;
-                if (barcodes.isNotEmpty) {
-                  sendData(barcodes.first.rawValue ?? "");
-                }
-              },
-            ),
+    return MaterialApp(
+      title: 'EventFlow',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        fontFamily: 'Poppins',
+        scaffoldBackgroundColor: const Color(0xFF0A0E27),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF6C63FF),
+          secondary: Color(0xFF00D9FF),
+          surface: Color(0xFF1A1F3A),
+          background: Color(0xFF0A0E27),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          iconTheme: IconThemeData(color: Colors.white),
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      home: const SplashScreen(),
     );
   }
 }
