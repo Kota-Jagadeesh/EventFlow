@@ -62,7 +62,7 @@ class _DetailsScreenState extends State<DetailsScreen>
   Future<Map<String, dynamic>> sendToBackend() async {
     //replace this with your actual gooogle apps script web app url
     const String scriptUrl =
-        "https://script.google.com/macros/s/AKfycbwN9tiwr8BhYZJWCPOr0ZfMA7J3CIWWy_aUE4yD0bo61Sbad_vwK_4tfcFe_rgFv4J6NQ/exec";
+        "";
 
     try {
       final response = await http
